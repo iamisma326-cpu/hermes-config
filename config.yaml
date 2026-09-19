@@ -1,0 +1,214 @@
+model:
+  default: glm-5.3-thinking:free
+  provider: unorouter
+providers:
+  b-ai:
+    type: openai
+    base_url: https://api.b.ai/v1
+    key_env: B_AI_API_KEY
+    default_model: glm-5.3-flash
+  manifest:
+    type: openai
+    base_url: https://router.bynara.id/v1
+    key_env: CUSTOM_API_KEY
+    default_model: qwen3.8-max
+  unorouter:
+    type: openai
+    base_url: https://api.unorouter.com/v1
+    key_env: UNOROUTER_API_KEY
+    default_model: glm-5.3-flash:free
+  lumosel:
+    type: openai
+    base_url: https://api.lumosel.vip/v1
+    key_env: LUMOSEL_API_KEY
+  freemodel:
+    type: openai
+    base_url: https://cc.freemodel.dev/v1
+    key_env: FREEMODEL_API_KEY
+  experientiallabs:
+    type: openai
+    base_url: https://api.experientiallabs.ai/v1
+    key_env: EXPERIENTIALLABS_API_KEY
+  kktoken:
+    type: openai
+    base_url: https://kktoken.cc/v1
+    key_env: KKTOKEN_API_KEY
+  xkiro:
+    type: openai
+    base_url: https://api.xkiro.com/v1
+    key_env: XKIRO_API_KEY
+  modelscope:
+    type: openai
+    base_url: https://api-inference.modelscope.cn/v1
+    key_env: MODELSCOPE_API_KEY
+  tokenharbor:
+    type: openai
+    base_url: https://tokenharbor.ai/v1
+    key_env: TOKENHARBOR_API_KEY
+  kiosapi:
+    type: openai
+    base_url: https://router.kiosapi.com/v1
+    key_env: KIOSAPI_API_KEY
+  unikey:
+    type: openai
+    base_url: https://www.getunikey.ai/v1
+    key_env: UNIKEY_API_KEY
+  cometapi:
+    type: openai
+    base_url: https://api.cometapi.com/v1
+    key_env: COMETAPI_API_KEY
+    default_model: claude-fable-5-1
+  kie:
+    base_url: https://api.kie.ai/codex/v1
+    key_env: KIE_API_KEY
+    api_mode: codex_responses
+    default_model: gpt-5-5
+  codecraft:
+    type: openai
+    base_url: https://codecraftapi.com/v1
+    key_env: CODECRAFT_API_KEY
+    default_model: kimi-k3
+  zenmux:
+    type: openai
+    base_url: https://zenmux.ai/api/v1
+    key_env: ZENMUX_API_KEY
+  vyce:
+    type: openai
+    base_url: https://vyceai.com/v1
+    key_env: VYCE_API_KEY
+  dahl:
+    type: openai
+    base_url: https://inference.dahl.global/v1
+    key_env: DAHL_API_KEY
+agent:
+  max_turns: 150
+display:
+  tool_progress: all
+voice:
+  auto_tts: false
+delegation:
+  model: deepseek-v4-flash
+  provider: manifest
+skills:
+  trusted_project_dirs:
+    - /home/isma/.hermes/skills
+    - /home/isma/.hermes
+    - /home/isma/.agents/skills
+command_allowlist:
+  - SQL DROP
+  - script execution via -e/-c flag
+  - script execution via heredoc
+  - sudo with privilege flag (stdin/askpass/shell/list)
+  - git force push (rewrites remote history)
+  - recursive delete
+  - delete in root path
+  - git branch force delete
+  - shell command via -c/-lc flag
+  - overwrite system file via tee
+  - overwrite system file via redirection
+hooks:
+  pre_llm_call:
+    - id: codebase-memory-mcp
+      type: command
+      command: '''/home/isma/.local/bin/codebase-memory-mcp'' hook-augment --dialect
+        hermes'
+onboarding:
+  seen:
+    openclaw_residue_cleanup: true
+    busy_input_prompt: true
+    tool_progress_prompt: true
+_config_version: 39
+plugins:
+  enabled:
+    - orca-status
+session_reset:
+  mode: none
+mcp_servers:
+  filesystem:
+    command: npx
+    args:
+      - -y
+      - '@modelcontextprotocol/server-filesystem'
+      - /home/isma
+  fetch:
+    command: npx
+    args:
+      - -y
+      - '@modelcontextprotocol/server-fetch'
+  github:
+    command: npx
+    args:
+      - -y
+      - '@modelcontextprotocol/server-github'
+    env:
+      GITHUB_PERSONAL_ACCESS_TOKEN: ${GITHUB_PERSONAL_ACCESS_TOKEN}
+  sequential-thinking:
+    command: npx
+    args:
+      - -y
+      - '@modelcontextprotocol/server-sequential-thinking'
+  context7:
+    command: npx
+    args:
+      - -y
+      - '@upstash/context7-mcp@latest'
+  playwright:
+    command: npx
+    args:
+      - -y
+      - '@playwright/mcp'
+      - --browser
+      - chrome
+  memory:
+    command: npx
+    args:
+      - -y
+      - '@modelcontextprotocol/server-memory'
+  codebase-memory-mcp:
+    command: /home/isma/.local/bin/codebase-memory-mcp
+  inspo:
+    url: https://inspomcp.dev/api/mcp
+    headers:
+      Authorization: Bearer ${MCP_INSPO_API_KEY}
+    enabled: true
+  ui-skills:
+    url: https://www.ui-skills.com/mcp
+    enabled: true
+
+# ── Security ──────────────────────────────────────────────────────────
+# Secret redaction is ON by default — strings that look like API keys,
+# tokens, and passwords are masked in tool output, logs, and chat
+# responses before the model or user ever sees them. Set redact_secrets
+# to false to disable (e.g. when developing the redactor itself).
+# tirith pre-exec scanning is enabled by default when the tirith binary
+# is available. Configure via security.tirith_* keys or env vars
+# (TIRITH_ENABLED, TIRITH_BIN, TIRITH_TIMEOUT, TIRITH_FAIL_OPEN).
+#
+# security:
+#   redact_secrets: true
+#   tirith_enabled: true
+#   tirith_path: "tirith"
+#   tirith_timeout: 5
+#   tirith_fail_open: true
+
+# ── Fallback Model ────────────────────────────────────────────────────
+# Automatic provider failover when primary is unavailable.
+# Uncomment and configure to enable. Triggers on rate limits (429),
+# overload (529), service errors (503), or connection failures.
+#
+# Supported providers:
+#   openrouter   (OPENROUTER_API_KEY)  — routes to any model
+#   openai-codex (OAuth — hermes auth) — OpenAI Codex
+#   nous         (OAuth — hermes auth) — Nous Portal
+#   zai          (ZAI_API_KEY)         — Z.AI / GLM
+#   kimi-coding  (KIMI_API_KEY)        — Kimi / Moonshot
+#   kimi-coding-cn (KIMI_CN_API_KEY)   — Kimi / Moonshot (China)
+#   minimax      (MINIMAX_API_KEY)     — MiniMax
+#   minimax-cn   (MINIMAX_CN_API_KEY)  — MiniMax (China)
+#   bedrock      (AWS IAM / boto3)     — AWS Bedrock (Converse API)
+#
+# For custom OpenAI-compatible endpoints, add base_url and key_env.
+#
+# fallback_model:
+#   provider: openrouter
+#   model: anthropic/claude-sonnet-4

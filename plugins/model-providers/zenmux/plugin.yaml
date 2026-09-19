@@ -1,0 +1,4 @@
+name: zenmux
+kind: model-provider
+version: 0.1.0
+description: Zenmux.ai router — OpenAI-compatible, live /models filter for zero-price (free) models only.
