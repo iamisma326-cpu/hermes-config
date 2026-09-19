@@ -1,7 +1,4 @@
-# Nunca subir secretos en texto plano
+# Basura
 *.tar.gz
-*.env
-.env
-auth.json
 __pycache__/
 *.pyc

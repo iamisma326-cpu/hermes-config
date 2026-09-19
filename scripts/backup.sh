@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # backup.sh — Sincroniza tu Hermes de Linux hacia este repo (ejecutar desde el repo)
-# Uso: cd ~/hermes-config && bash scripts/backup.sh
+# Uso: cd ~/hermes-config && bash scripts/backup.sh  (copia skills/plugins/config/secrets y listo)
 set -euo pipefail
 
 H="$HOME/.hermes"
@@ -37,22 +37,11 @@ echo "== Respaldando config.yaml (sanitizado) =="
 cp "$H/config.yaml" "$REPO/config.yaml"
 grep -qE "ghp_[A-Za-z0-9]{10,}" "$REPO/config.yaml" && echo "⚠️  ATENCION: config.yaml contiene un token ghp_ — sanitizalo antes de commit"
 
-echo "== Re-cifrando secrets =="
-if [ -n "${1:-}" ]; then
-  PASS="$1"
-else
-  echo "Pasa la passphrase como argumento para re-cifrar secrets: bash scripts/backup.sh MI_PASSPHRASE"
-  echo "Si no la pasas, los secrets cifrados del repo quedan como están (sin actualizar)."
-  PASS=""
-fi
-if [ -n "$PASS" ]; then
-  TMP=$(mktemp -d)
-  tar czf "$TMP/secrets.tar.gz" -C "$H" .env auth.json
-  openssl enc -aes-256-cbc -pbkdf2 -iter 600000 -salt \
-    -in "$TMP/secrets.tar.gz" -out "$REPO/secrets/secrets.tar.gz.enc" -pass pass:"$PASS"
-  rm -rf "$TMP"
-  echo "Secrets re-cifrados."
-fi
+echo "== Copiando secrets (texto plano) =="
+mkdir -p "$REPO/secrets"
+cp "$H/.env" "$REPO/secrets/.env"
+cp "$H/auth.json" "$REPO/secrets/auth.json"
+echo "   secrets/.env y secrets/auth.json actualizados."
 
 echo "== Backup listo. Revisa con git status y haz commit+push =="
 git -C "$REPO" status --short | head -30
